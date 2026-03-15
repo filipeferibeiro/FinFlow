@@ -14,6 +14,6 @@ struct FinFlowApp: App {
         WindowGroup {
             ContentView()
         }
-        .modelContainer(for: Subscription.self)
+        .modelContainer(for: [Subscription.self, Account.self, Transaction.self])
     }
 }

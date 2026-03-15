@@ -35,7 +35,7 @@ struct TransactionsView: View {
                 }
             }
             .sheet(isPresented: $addNewSubscriptionSheetIsPresented) {
-                AddSubscriptionSheetView()
+                AddTransactionSheetView()
             }
         }
     }

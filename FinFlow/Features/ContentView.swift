@@ -18,7 +18,7 @@ struct ContentView: View {
                 TransactionsView()
             }
             Tab("Settings", systemImage: "gear") {
-                Text("To-Do")
+                SettingsView()
             }
         }
     }
@@ -33,10 +33,17 @@ struct ContentView: View {
 let previewContainer: ModelContainer = {
     do {
         let config = ModelConfiguration(isStoredInMemoryOnly: true)
-        let container = try ModelContainer(for: Subscription.self, configurations: config)
+        let container = try ModelContainer(for: Subscription.self, Account.self, Transaction.self, configurations: config)
         
-        let mockData = Subscription(name: "Spotify", price: 2190, paymentDate: Date())
-        container.mainContext.insert(mockData)
+        let mockBankAccount = Account(name: "NuBank", initialBalance: 26754, iconName: "creditcard", colorHex: "#2196F3")
+        let mockSubscription = Subscription(name: "Spotify", price: 2190, paymentDate: Date())
+        let mockTransaction = Transaction(name: "Spotify", amount: 2190, date: Date(), type: .expense)
+        
+        mockTransaction.account = mockBankAccount
+        
+        container.mainContext.insert(mockBankAccount)
+        container.mainContext.insert(mockSubscription)
+        container.mainContext.insert(mockTransaction)
         
         return container
     } catch {

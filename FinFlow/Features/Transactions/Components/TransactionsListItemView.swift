@@ -8,28 +8,35 @@
 import SwiftUI
 
 struct TransactionsListItemView: View {
-    let subscription: Subscription
+    let transaction: Transaction
     
     private let color: Color = .orange
     private let icon = "dollarsign"
     private let isIncoming: Bool = false
     
+    var transactionTypeIcon: String {
+        switch transaction.type {
+        case .income:
+            return "plus"
+        case .expense:
+            return "minus"
+        case .transfer:
+            return "arrow.trianglehead.2.counterclockwise.rotate.90"
+        }
+    }
+    
     var body: some View {
         HStack {
-            ZStack {
-                Circle()
-                    .fill(color.opacity(0.15))
-                    .frame(width: 44, height: 44)
-                Image(systemName: icon)
-                    .foregroundStyle(color)
-                    .font(.system(size: 18, weight: .semibold))
-            }
+            IconIndicatorView(color: color, icon: icon)
+                .overlay(alignment: .bottomTrailing) {
+                    BadgeTransactionTypeView(for: transaction.type)
+                }
             
             VStack(alignment: .leading, spacing: 4) {
-                Text(subscription.name)
+                Text(transaction.name)
                     .font(.body)
                     .fontWeight(.medium)
-                Text("Bank")
+                Text(transaction.account?.name ?? "Unknown Account")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
@@ -37,11 +44,12 @@ struct TransactionsListItemView: View {
             Spacer()
             
             VStack(alignment: .trailing, spacing: 4) {
-                Text(Double(subscription.price) / 100, format: .currency(code: "BRL"))
+                Text(transaction.amount.asCurrencyString())
                     .font(.body)
                     .fontWeight(.bold)
                     .foregroundStyle(isIncoming ? .green : .primary)
-                Text(subscription.paymentDate.formatted(date: .numeric, time: .omitted))
+                
+                Text("Paid")
                     .font(.caption2)
                     .foregroundStyle(.secondary)
             }
@@ -51,7 +59,13 @@ struct TransactionsListItemView: View {
 
 
 #Preview {
-    let subscription: Subscription = Subscription(id: UUID(), name: "Netflix", price: 2190, paymentDate: Date())
+    let transaction1: Transaction = Transaction(name: "Netflix", amount: 2190, date: Date(), type: .expense)
+    let transaction2: Transaction = Transaction(name: "Netflix", amount: 2190, date: Date(), type: .income)
+    let transaction3: Transaction = Transaction(name: "Netflix", amount: 2190, date: Date(), type: .transfer)
     
-    TransactionsListItemView(subscription: subscription)
+    VStack {
+        TransactionsListItemView(transaction: transaction1)
+        TransactionsListItemView(transaction: transaction2)
+        TransactionsListItemView(transaction: transaction3)
+    }
 }

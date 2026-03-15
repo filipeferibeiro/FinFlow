@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct BalanceSummaryView: View {
+    var totalBalance: Int
+    
     var body: some View {
         VStack(spacing: 20) {
             // Total Balance
@@ -15,7 +17,7 @@ struct BalanceSummaryView: View {
                 Text("Saldo Total Atual")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
-                Text("R$ 5.420,50")
+                Text(totalBalance.asCurrencyString())
                     .font(.system(.title, design: .rounded))
                     .fontWeight(.bold)
             }
@@ -82,5 +84,5 @@ struct SummaryValueView: View {
 }
 
 #Preview {
-    BalanceSummaryView()
+    BalanceSummaryView(totalBalance: 345678)
 }
