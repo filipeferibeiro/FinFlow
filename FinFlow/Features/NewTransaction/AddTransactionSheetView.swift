@@ -20,6 +20,7 @@ struct AddTransactionSheetView: View {
     @State private var name: String = ""
     @State private var value: Int = 0
     @State private var date: Date = Date()
+    @State private var isPaid: Bool = true
     
     @State private var selectedAccount: Account?
     @State private var destinationAccount: Account?
@@ -71,6 +72,16 @@ struct AddTransactionSheetView: View {
                         .disableAutocorrection(true)
                     
                     DatePicker("Date", selection: $date, displayedComponents: .date)
+                        .onChange(of: date) { _, newDate in
+                            if Calendar.current.startOfDay(for: newDate) > Calendar.current.startOfDay(for: Date()) {
+                                withAnimation { isPaid = false }
+                            } else {
+                                withAnimation { isPaid = true }
+                            }
+                        }
+                    
+                    Toggle("Is paid?", isOn: $isPaid)
+                        .tint(.accent)
                 }
                 
                 Section("Accounts") {
@@ -136,7 +147,8 @@ struct AddTransactionSheetView: View {
             name: name,
             amount: value,
             date: date,
-            type: type
+            type: type,
+            isPaid: isPaid
         )
         
         newTransaction.account = selectedAccount

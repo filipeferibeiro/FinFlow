@@ -49,9 +49,9 @@ struct TransactionsListItemView: View {
                     .fontWeight(.bold)
                     .foregroundStyle(isIncoming ? .green : .primary)
                 
-                Text("Paid")
-                    .font(.caption2)
+                Image(systemName: transaction.isPaid ? "hand.thumbsup.fill" : "hand.thumbsdown.fill")
                     .foregroundStyle(.secondary)
+                    .font(.caption2)
             }
         }
     }
@@ -60,7 +60,7 @@ struct TransactionsListItemView: View {
 
 #Preview {
     let transaction1: Transaction = Transaction(name: "Netflix", amount: 2190, date: Date(), type: .expense)
-    let transaction2: Transaction = Transaction(name: "Netflix", amount: 2190, date: Date(), type: .income)
+    let transaction2: Transaction = Transaction(name: "Netflix", amount: 2190, date: Date(), type: .income, isPaid: false)
     let transaction3: Transaction = Transaction(name: "Netflix", amount: 2190, date: Date(), type: .transfer)
     
     VStack {

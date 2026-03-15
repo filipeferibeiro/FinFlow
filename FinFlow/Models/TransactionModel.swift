@@ -15,17 +15,19 @@ final class Transaction {
     var amount: Int
     var date: Date
     var type: TransactionType
+    var isPaid: Bool
     
     var account: Account?
     
     // If is a transfer transaction type
     var destinationAccount: Account?
     
-    init(id: UUID = UUID(), name: String, amount: Int, date: Date, type: TransactionType) {
+    init(id: UUID = UUID(), name: String, amount: Int, date: Date, type: TransactionType, isPaid: Bool = true) {
         self.id = id
         self.name = name
         self.amount = amount
         self.date = date
         self.type = type
+        self.isPaid = isPaid
     }
 }
