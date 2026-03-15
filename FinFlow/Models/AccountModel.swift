@@ -41,73 +41,19 @@ final class Account {
         let completedPrimaryTransactions = transactions?.filter { $0.isPaid }
         let completedIncomingTransfers = incomingTransfers?.filter { $0.isPaid }
         
-        // 1. Soma das saídas e entradas normais
+        // 1. Sum of total income and expense
         let primaryTransactionsTotal = completedPrimaryTransactions?.reduce(0) { total, tx in
             switch tx.type {
             case .income:
                 return total + tx.amount
             case .expense, .transfer:
-                return total - tx.amount // Transferência sai dessa conta
+                return total - tx.amount // Transfers = expense in a bank account
             }
         } ?? 0
         
-        // 2. Soma das transferências recebidas
-        let incomingTransfersTotal = completedIncomingTransfers?.reduce(0) { total, tx in
-            return total + tx.amount
-        } ?? 0
+        // 2. Sum of incoming transfers
+        let incomingTransfersTotal = completedIncomingTransfers?.reduce(0) { $0 + $1.amount } ?? 0
         
         return initialBalance + primaryTransactionsTotal + incomingTransfersTotal
-    }
-    
-    func currentCompletedIncomesBalance(for targetMonth: Date) -> Int {
-        guard let transactions = self.transactions else { return 0 }
-        
-        let calendar = Calendar.current
-        
-        let validIncomes = transactions.filter { transaction in
-            let isIncome = transaction.type == .income
-            
-            let isPaid = transaction.isPaid
-            
-            let isSameMonthAndYear = calendar.isDate(transaction.date, equalTo: targetMonth, toGranularity: .month)
-            
-            return isIncome && isPaid && isSameMonthAndYear
-        }
-        
-        return validIncomes.reduce(0) { $0 + $1.amount }
-    }
-    
-    func currentCompletedExpensesBalance(for targetMonth: Date) -> Int {
-        guard let transactions = self.transactions else { return 0 }
-        
-        let calendar = Calendar.current
-        
-        let validExpenses = transactions.filter { transaction in
-            let isExpense = transaction.type == .expense
-            
-            let isPaid = transaction.isPaid
-            
-            let isSameMonthAndYear = calendar.isDate(transaction.date, equalTo: targetMonth, toGranularity: .month)
-            
-            return isExpense && isPaid && isSameMonthAndYear
-        }
-        
-        return validExpenses.reduce(0) { $0 + $1.amount }
-    }
-    
-    func expectedTransactionsBalance(for targetMonth: Date) -> Int {
-        guard let transactions = self.transactions else { return 0 }
-        
-        let calendar = Calendar.current
-        
-        let validTransactions = transactions.filter { transaction in
-            let isIncomeOrExpense = transaction.type == .income || transaction.type == .expense
-            
-            let isSameMonthAndYear = calendar.isDate(transaction.date, equalTo: targetMonth, toGranularity: .month)
-            
-            return isIncomeOrExpense && isSameMonthAndYear
-        }
-        
-        return validTransactions.reduce(0) { $0 + $1.amount }
     }
 }

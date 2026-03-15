@@ -16,14 +16,37 @@ struct AddTransactionSheetView: View {
     
     @FocusState private var isValueFocused: Bool
     
-    @State private var type: TransactionType = .expense
-    @State private var name: String = ""
-    @State private var value: Int = 0
-    @State private var date: Date = Date()
-    @State private var isPaid: Bool = true
+    let transactionToEdit: Transaction?
     
+    @State private var type: TransactionType
+    @State private var name: String
+    @State private var value: Int
+    @State private var date: Date
+    @State private var isPaid: Bool
     @State private var selectedAccount: Account?
     @State private var destinationAccount: Account?
+    
+    init(transactionToEdit: Transaction? = nil) {
+        self.transactionToEdit = transactionToEdit
+        
+        if let transaction = transactionToEdit {
+            _type = State(initialValue: transaction.type)
+            _name = State(initialValue: transaction.name)
+            _value = State(initialValue: transaction.amount)
+            _date = State(initialValue: transaction.date)
+            _isPaid = State(initialValue: transaction.isPaid)
+            _selectedAccount = State(initialValue: transaction.account)
+            _destinationAccount = State(initialValue: transaction.destinationAccount)
+        } else {
+            _type = State(initialValue: .expense)
+            _name = State(initialValue: "")
+            _value = State(initialValue: 0)
+            _date = State(initialValue: Date())
+            _isPaid = State(initialValue: true)
+            _selectedAccount = State(initialValue: nil)
+            _destinationAccount = State(initialValue: nil)
+        }
+    }
     
     private var isFormValid: Bool {
         guard !name.trimmingCharacters(in: .whitespaces).isEmpty else { return false }
@@ -109,7 +132,7 @@ struct AddTransactionSheetView: View {
                     }
                 }
             }
-            .navigationTitle("New Transaction")
+            .navigationTitle(transactionToEdit == nil ? "New Transaction" : "Edit Transaction")
             .navigationBarTitleDisplayMode(.inline)
             .scrollDismissesKeyboard(.interactively)
             .toolbar {
@@ -142,22 +165,32 @@ struct AddTransactionSheetView: View {
     }
     
     private func saveTransaction() {
-        let newTransaction = Transaction(
-            id: UUID(),
-            name: name,
-            amount: value,
-            date: date,
-            type: type,
-            isPaid: isPaid
-        )
-        
-        newTransaction.account = selectedAccount
-        if type == .transfer {
-            newTransaction.destinationAccount = destinationAccount
-        }
-        
-        withAnimation {
-            modelContext.insert(newTransaction)
+        if let transaction = transactionToEdit {
+            transaction.name = name
+            transaction.amount = value
+            transaction.date = date
+            transaction.type = type
+            transaction.isPaid = isPaid
+            transaction.account = selectedAccount
+            transaction.destinationAccount = type == .transfer ? destinationAccount : nil
+        } else {
+            let newTransaction = Transaction(
+                id: UUID(),
+                name: name,
+                amount: value,
+                date: date,
+                type: type,
+                isPaid: isPaid
+            )
+            
+            newTransaction.account = selectedAccount
+            if type == .transfer {
+                newTransaction.destinationAccount = destinationAccount
+            }
+            
+            withAnimation {
+                modelContext.insert(newTransaction)
+            }
         }
         
         UINotificationFeedbackGenerator().notificationOccurred(.success)

@@ -18,6 +18,8 @@ struct FilteredTransactionsListView: View {
     private let selectedMonth: Date
     @State private var monthSummary: MonthSummary = MonthSummary(realizedBalance: 0, projectedBalance: 0, realizedIncome: 0, projectedIncome: 0, realizedExpense: 0, projectedExpense: 0)
     
+    @State private var transactionToEdit: Transaction?
+    
     private var groupedTransactionsByDate: [(Date, [Transaction])] {
         let grouped = Dictionary(grouping: transactions) { transaction in
             Calendar.current.startOfDay(for: transaction.date)
@@ -52,23 +54,30 @@ struct FilteredTransactionsListView: View {
                     ForEach(groupedTransactionsByDate, id: \.0) { date, dateTransactions in
                         Section {
                             ForEach(dateTransactions) { transaction in
-                                TransactionsListItemView(transaction: transaction)
-                                    .swipeActions(edge: .leading, allowsFullSwipe: true) {
-                                        Button {
-                                            withAnimation(.spring) {
-                                                transaction.isPaid.toggle()
-                                            }
-                                            
-                                            let generator = UIImpactFeedbackGenerator(style: .medium)
-                                            generator.impactOccurred()
-                                        } label: {
-                                            Label(
-                                                transaction.isPaid ? "Unpay" : "Pay",
-                                                systemImage: transaction.isPaid ? "hand.thumbsdown.fill" : "hand.thumbsup.fill"
-                                            )
-                                            .tint(transaction.isPaid ? .yellow : .green)
+                                Button {
+                                    transactionToEdit = transaction
+                                } label : {
+                                    TransactionsListItemView(transaction: transaction)
+                                }
+                                .buttonStyle(.plain)
+                                .swipeActions(edge: .leading, allowsFullSwipe: true) {
+                                    Button {
+                                        withAnimation(.spring) {
+                                            transaction.isPaid.toggle()
                                         }
+                                        
+                                        let generator = UIImpactFeedbackGenerator(style: .medium)
+                                        generator.impactOccurred()
+                                        
+                                        updateSummary()
+                                    } label: {
+                                        Label(
+                                            transaction.isPaid ? "Unpay" : "Pay",
+                                            systemImage: transaction.isPaid ? "xmark" : "checkmark"
+                                        )
+                                        .tint(transaction.isPaid ? .orange : .green)
                                     }
+                                }
                             }
                             .onDelete { offsets in
                                 deleteTransactions(at: offsets, in: dateTransactions)
@@ -85,21 +94,16 @@ struct FilteredTransactionsListView: View {
                 .scrollIndicators(.hidden)
             }
         }
-        .task(id: selectedMonth) {
-            let container = modelContext.container
-            
-            let calculator = SummaryCalculator(modelContainer: container)
-            
-            do {
-                let summary = try await calculator.generateSummary(for: selectedMonth)
-                
-                withAnimation {
-                    self.monthSummary = summary
-                }
-            } catch {
-                print("Error calculating summary: \(error)")
-            }
+        .onChange(of: transactions) { _, _ in
+            updateSummary()
         }
+        .sheet(item: $transactionToEdit, onDismiss: updateSummary) { transaction in
+            AddTransactionSheetView(transactionToEdit: transaction)
+        }
+        .task(id: selectedMonth) {
+            updateSummary()
+        }
+        
     }
     
     private func headerTitle(for date: Date) -> String {
@@ -123,6 +127,37 @@ struct FilteredTransactionsListView: View {
             
             withAnimation {
                 modelContext.delete(transactionToDelete)
+            }
+        }
+    }
+    
+    private func updateSummary() {
+        let container = modelContext.container
+        let targetMonth = selectedMonth
+        
+        Task {
+            try? await Task.sleep(for: .milliseconds(50))
+            
+            await MainActor.run {
+                do {
+                    try modelContext.save()
+                } catch {
+                    print("Error on force saving: \(error)")
+                }
+            }
+        
+            let calculator = SummaryCalculator(modelContainer: container)
+            
+            do {
+                let summary = try await calculator.generateSummary(for: targetMonth)
+                
+                await MainActor.run {
+                    withAnimation(.spring) {
+                        self.monthSummary = summary
+                    }
+                }
+            } catch {
+                print("Error calculating summary: \(error)")
             }
         }
     }

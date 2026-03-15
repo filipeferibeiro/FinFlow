@@ -9,6 +9,7 @@ import SwiftUI
 
 struct BadgeTransactionTypeView: View {
     var type: TransactionType
+    var cutoutColor: Color = Color(uiColor: .systemGroupedBackground)
     
     private var badgeIconName: String {
         switch type {
@@ -17,7 +18,7 @@ struct BadgeTransactionTypeView: View {
         case .expense:
             return "minus"
         case .transfer:
-            return "arrow.trianglehead.2.counterclockwise.rotate.90"
+            return "arrow.left.arrow.right"
         }
     }
     
@@ -39,15 +40,15 @@ struct BadgeTransactionTypeView: View {
     var body: some View {
         ZStack {
             Circle()
-                .fill(Color(uiColor: .systemGroupedBackground))
+                .fill(cutoutColor)
                 .frame(width: 20, height: 20)
             
             Circle()
-                .fill(badgeColor.opacity(0.6))
+                .fill(badgeColor)
                 .frame(width: 16, height: 16)
             
             Image(systemName: badgeIconName)
-                .font(.system(size: 10, weight: .bold))
+                .font(.system(size: 9, weight: .black))
                 .foregroundStyle(.white)
         }
         .offset(x: 2, y: 2)

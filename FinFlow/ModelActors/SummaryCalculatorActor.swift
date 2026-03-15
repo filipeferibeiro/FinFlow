@@ -41,6 +41,8 @@ actor SummaryCalculator {
             let isBeforeEndOfMonth = transaction.date < endOfMonth
             let isSameMonth = calendar.isDate(transaction.date, equalTo: targetMonth, toGranularity: .month)
             
+            if transaction.type == .transfer { continue }
+            
             // Logic for balance
             if isBeforeEndOfMonth {
                 let amount = transaction.type == .income ? transaction.amount : -transaction.amount
