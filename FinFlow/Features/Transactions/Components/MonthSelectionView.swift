@@ -39,6 +39,7 @@ struct MonthSelectionView: View {
         .padding(.horizontal)
         .padding(.vertical, 8)
         .glassEffectWithFallback(in: .capsule)
+        .contentShape(Rectangle())
         .gesture(
             DragGesture()
                 .onChanged { value in
