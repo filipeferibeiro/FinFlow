@@ -18,9 +18,11 @@ struct BankAccountsView: View {
         List {
             ForEach(accounts) { account in
                 BankAccountItemListView(account: account)
+                    .clearListItemDecoration()
             }
             .onDelete(perform: deleteBankAccount)
         }
+        .clearListDecoration()
         .navigationTitle("Bank Accounts")
         .toolbar {
             ToolbarItem {
@@ -31,7 +33,12 @@ struct BankAccountsView: View {
         }
         .sheet(isPresented: $isNewAccountSheetPresent) {
             NewBankAccountView()
+                .presentationBackground {
+                    BackgroundView()
+                        .overlay(.regularMaterial)
+                }
         }
+        .withBackground()
     }
     
     private func deleteBankAccount(at offsets: IndexSet) {

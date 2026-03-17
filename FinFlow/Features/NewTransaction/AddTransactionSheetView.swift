@@ -106,6 +106,7 @@ struct AddTransactionSheetView: View {
                     Toggle("Is paid?", isOn: $isPaid)
                         .tint(.accent)
                 }
+                .listRowBackground(Color.primary.opacity(0.05))
                 
                 Section("Accounts") {
                     if accounts.isEmpty {
@@ -131,10 +132,13 @@ struct AddTransactionSheetView: View {
                         }
                     }
                 }
+                .listRowBackground(Color.primary.opacity(0.05))
             }
             .navigationTitle(transactionToEdit == nil ? "New Transaction" : "Edit Transaction")
             .navigationBarTitleDisplayMode(.inline)
             .scrollDismissesKeyboard(.interactively)
+            .scrollContentBackground(.hidden)
+            .background(Color.clear)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Dismiss", systemImage: "xmark") {

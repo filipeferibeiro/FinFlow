@@ -6,3 +6,14 @@
 //
 
 import Foundation
+import SwiftUI
+
+extension View {
+    @ViewBuilder
+    func clearListDecoration() -> some View {
+        self
+            .listStyle(.plain)
+            .scrollContentBackground(.hidden)
+            .scrollIndicators(.hidden)
+    }
+}

@@ -16,9 +16,13 @@ struct SettingsView: View {
                 } label: {
                     Label("Bank Accounts", systemImage: "building.columns.fill")
                 }
+                .listItemBackground()
+                .clearListItemDecoration()
             }
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.inline)
+            .clearListDecoration()
+            .withBackground()
         }
     }
 }

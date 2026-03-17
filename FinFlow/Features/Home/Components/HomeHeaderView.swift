@@ -26,13 +26,21 @@ struct HomeHeaderView: View {
                         .foregroundStyle(.tertiary)
                         .padding(.top, 8)
                     
-                    Text(isValueVisible ? balance.asCurrencyString() : "••••••••")
-                        .font(.system(size: 36, weight: .black, design: .rounded))
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.4)
-                        .foregroundStyle(.primary)
-                        .contentTransition(.numericText())
-                        .animation(.snappy, value: isValueVisible)
+                    CurrencyDecorationView(
+                        for: balance,
+                        isVisible: isValueVisible,
+                        fontSize: 36,
+                        fontWeight: .black
+                    )
+                    .foregroundStyle(.primary)
+                    
+//                    Text(isValueVisible ? balance.asCurrencyString() : "••••••••")
+//                        .font(.system(size: 36, weight: .black, design: .rounded))
+//                        .lineLimit(1)
+//                        .minimumScaleFactor(0.4)
+//                        .foregroundStyle(.primary)
+//                        .contentTransition(.numericText())
+//                        .animation(.snappy, value: isValueVisible)
                 }
             }
         }

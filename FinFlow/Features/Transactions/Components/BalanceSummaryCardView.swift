@@ -19,9 +19,12 @@ struct BalanceSummaryCardView: View {
                     .foregroundStyle(.secondary)
                 
                 // Actual Balance
-                Text(summary.realizedBalance.asCurrencyString())
-                    .font(.system(size: 36, weight: .bold, design: .rounded))
-                    .foregroundStyle(.primary)
+                CurrencyDecorationView(
+                    for: summary.realizedBalance,
+                    fontSize: 36,
+                    fontWeight: .bold
+                )
+                .foregroundStyle(.primary)
                 
                 // Projected Balance
                 HStack(spacing: 4) {
@@ -63,8 +66,13 @@ struct BalanceSummaryCardView: View {
             }
         }
         .padding(20)
-        .background(Color(.secondarySystemGroupedBackground))
+        .contentShape(Rectangle())
+        .background(.thinMaterial)
         .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 24, style: .continuous)
+                .stroke(Color.primary.opacity(0.15), lineWidth: 0.5)
+        }
         .shadow(color: .black.opacity(0.05), radius: 10, x: 0, y: 4)
     }
 }

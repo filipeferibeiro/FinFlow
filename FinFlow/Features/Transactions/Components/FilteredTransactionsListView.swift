@@ -49,7 +49,7 @@ struct FilteredTransactionsListView: View {
                     BalanceSummaryCardView(summary: monthSummary)
                         .listRowBackground(Color.clear)
                         .listRowSeparator(.hidden)
-                        .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
+                        .listRowInsets(EdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16))
                     
                     ForEach(groupedTransactionsByDate, id: \.0) { date, dateTransactions in
                         Section {
@@ -57,9 +57,10 @@ struct FilteredTransactionsListView: View {
                                 Button {
                                     transactionToEdit = transaction
                                 } label : {
-                                    TransactionsListItemView(transaction: transaction)
+                                    TransactionsListItem(transaction: transaction)
                                 }
                                 .buttonStyle(.plain)
+                                .clearListItemDecoration()
                                 .swipeActions(edge: .leading, allowsFullSwipe: true) {
                                     Button {
                                         withAnimation(.spring) {
@@ -91,7 +92,7 @@ struct FilteredTransactionsListView: View {
                         }
                     }
                 }
-                .scrollIndicators(.hidden)
+                .clearListDecoration()
             }
         }
         .onChange(of: transactions) { _, _ in

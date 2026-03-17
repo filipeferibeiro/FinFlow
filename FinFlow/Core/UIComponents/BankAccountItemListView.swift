@@ -27,6 +27,7 @@ struct BankAccountItemListView: View {
                 .contentTransition(.numericText())
                 .animation(.snappy, value: isValueVisible)
         }
+        .listItemBackground()
     }
 }
 

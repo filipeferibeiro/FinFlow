@@ -39,6 +39,7 @@ struct NewBankAccountView: View {
                         .textInputAutocapitalization(.words)
                         .disableAutocorrection(true)
                 }
+                .listRowBackground(Color.primary.opacity(0.05))
                 
                 Section("Appearance") {
                     ColorPicker("Account Color", selection: $selectedColor, supportsOpacity: false)
@@ -57,10 +58,13 @@ struct NewBankAccountView: View {
                         }
                     }
                 }
+                .listRowBackground(Color.primary.opacity(0.05))
             }
             .navigationTitle("New Account")
             .navigationBarTitleDisplayMode(.inline)
             .scrollDismissesKeyboard(.interactively)
+            .scrollContentBackground(.hidden)
+            .background(Color.clear)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel", systemImage: "xmark") {

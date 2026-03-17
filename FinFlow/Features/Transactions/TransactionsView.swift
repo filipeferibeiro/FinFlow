@@ -15,28 +15,33 @@ struct TransactionsView: View {
     var body: some View {
         NavigationStack {
             FilteredTransactionsListView(for: selectedMonth)
-            .safeAreaInset(edge: .bottom) {
-                MonthSelectionView(selectedMonth: $selectedMonth)
-                    .padding([.bottom, .horizontal])
-            }
-            .navigationTitle("Transactions")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button("Filtrar", systemImage: "line.3.horizontal.decrease.circle") {
-                        // TO-DO
+                .safeAreaInset(edge: .bottom) {
+                    MonthSelectionView(selectedMonth: $selectedMonth)
+                        .padding([.bottom, .horizontal])
+                }
+                .navigationTitle("Transactions")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button("Filtrar", systemImage: "line.3.horizontal.decrease.circle") {
+                            // TO-DO
+                        }
+                    }
+                    
+                    ToolbarItem(placement: .primaryAction) {
+                        Button("Adicionar assinatura", systemImage: "plus") {
+                            addNewSubscriptionSheetIsPresented.toggle()
+                        }
                     }
                 }
-                
-                ToolbarItem(placement: .primaryAction) {
-                    Button("Adicionar assinatura", systemImage: "plus") {
-                        addNewSubscriptionSheetIsPresented.toggle()
-                    }
+                .sheet(isPresented: $addNewSubscriptionSheetIsPresented) {
+                    AddTransactionSheetView()
+                        .presentationBackground {
+                            BackgroundView()
+                                .overlay(.regularMaterial)
+                        }
                 }
-            }
-            .sheet(isPresented: $addNewSubscriptionSheetIsPresented) {
-                AddTransactionSheetView()
-            }
+                .withBackground()
         }
     }
 }
